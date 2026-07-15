@@ -1,0 +1,33 @@
+name: Build IPA
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Archive
+        run: |
+          cd MyWebApp
+          xcodebuild -project MyWebApp.xcodeproj \
+            -scheme MyWebApp \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/MyWebApp.xcarchive \
+            archive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Create IPA
+        run: |
+          mkdir -p $RUNNER_TEMP/Payload
+          cp -r $RUNNER_TEMP/MyWebApp.xcarchive/Products/Applications/MyWebApp.app $RUNNER_TEMP/Payload/
+          cd $RUNNER_TEMP
+          zip -r MyWebApp.ipa Payload
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyWebApp-IPA
+          path: ${{ runner.temp }}/MyWebApp.ipa
