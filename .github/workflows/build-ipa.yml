@@ -11,7 +11,7 @@ jobs:
       - name: Build Archive
         run: |
           cd MyWebApp
-          xcodebuild -project MyWebApp.xcodeproj \
+          xcodebuild -project ../MyWebApp.xcodeproj \
             -scheme MyWebApp \
             -sdk iphoneos \
             -configuration Release \
